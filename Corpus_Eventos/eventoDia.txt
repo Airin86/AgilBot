@@ -1,0 +1,66 @@
+export default (request, response) => {
+    
+//Entrada para tomar información de dialogflow
+    let bodyString = request.body;
+    var entradaDialogFlow = JSON.parse(bodyString);
+    console.log("Entrada DialogFlow: "+entradaDialogFlow);
+    
+    
+//COGER DATOS DEL USUARIO
+//Tomo el valor almacenado de la entidad $date
+// (se hace poniendo al final el .date, para tomar otra cambiar date por la entidad que quieres)
+    var diaDado=entradaDialogFlow['queryResult']['parameters'].date;
+    
+    
+// CAMBIO FORMATO DE FECHA
+// Porque viene con fecha, hora y zona horaria
+// 2018-11-23T16:51:42+05:30
+    // ["2018-11-23", "16:51:42+05:30"] Quitamos la T del medio
+    var aux = diaDado.split('T');
+    // ["2018-11-23"] Tomamos solo la fecha
+    var diaReal = aux[0];
+
+
+
+// ESTABLECER VALOR POR DEFECTO
+// Tan sencillo como declarar la variable y darle valor
+    var evento="ninguno";
+    
+    
+// IFELSE DE OPCIONES POR DIA
+    if (diaReal==="2021-12-06"){
+        evento="examen Analisis Vectorial";
+    }else if (diaReal ==="2021-12-07"){
+        evento="taller de dibujo"+"preparar examen topologia";
+    }else if (diaReal ==="2021-12-08"){
+        evento="entrega de NPI";
+    }else if (diaReal ==="2021-12-09"){
+        evento="entrega de PL";
+    }else if (diaReal ==="2021-12-10"){
+        evento="examen topologia";
+    }else if (diaReal ==="2021-12-11"){
+        evento="preparar examen analisis vectorial";
+    }else{
+        evento="ninguno";
+    }
+
+
+// ESTABLECER RESPUESTA
+    let respuesta = "Para ese día tienes "+evento;
+
+
+    // Set the status code - by default it would return 200
+    response.status = 200;
+
+
+// RETURN DE LA RESPUESTA
+    // Set the headers the way you like
+    response.headers['X-Custom-Header'] = 'CustomHeaderValue';
+    return request.json().then((body) => {
+    return response.send({ fulfillmentText: respuesta });
+    //return response.send({speech: "What's up cool developer :)"});
+
+}).catch((err) => {
+return response.send("Malformed JSON body.");
+});
+};
